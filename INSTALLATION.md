@@ -37,9 +37,27 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force
 
 ---
 
-## Step 2 — Download the Module
+## Step 2 — Install the Module
 
-### Option A — Manual download
+### Option A — PowerShell Gallery (recommended)
+
+The simplest method. Run in an **elevated** PowerShell window:
+
+```powershell
+Install-Module -Name IntuneEnrollmentRepair
+```
+
+This installs the module permanently and makes it available in all future sessions without needing to `Import-Module` manually. The module is hosted on the [PowerShell Gallery](https://www.powershellgallery.com/packages/IntuneEnrollmentRepair/1.0.8).
+
+To update to the latest version later:
+
+```powershell
+Update-Module -Name IntuneEnrollmentRepair
+```
+
+---
+
+### Option B — Manual download
 
 1. Download or copy the two module files to the device:
    - `IntuneEnrollmentRepair.psm1`
@@ -50,82 +68,30 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope LocalMachine -Force
    C:\Tools\IntuneEnrollmentRepair\
    ```
 
-### Option B — Via RMM / software deployment
+3. Copy to a PowerShell module directory so it is permanently discoverable:
 
-Deploy both files to a consistent path on target devices, for example:
+```powershell
+$dest = "$env:ProgramFiles\WindowsPowerShell\Modules\IntuneEnrollmentRepair"
+New-Item -Path $dest -ItemType Directory -Force
+Copy-Item -Path "C:\Tools\IntuneEnrollmentRepair\*" -Destination $dest -Force
 ```
-C:\ProgramData\IntuneRepair\IntuneEnrollmentRepair\
+
+Or import directly for a one-off session:
+
+```powershell
+Import-Module C:\Tools\IntuneEnrollmentRepair\IntuneEnrollmentRepair.psm1 -Force
 ```
 
 Both files must be in the same directory. The `.psd1` manifest is required — do not deploy just the `.psm1`.
 
 ---
 
-## Step 3 — Install the Module
-
-There are two ways to use the module: import it directly for a one-off session, or install it permanently so it is always available.
-
-### Option A — Direct import (one-off / portable use)
-
-Open an **elevated** PowerShell window and run:
-
-```powershell
-Import-Module C:\Tools\IntuneEnrollmentRepair\IntuneEnrollmentRepair.psm1 -Force
-```
-
-The module is available for the duration of that PowerShell session only.
-
----
-
-### Option B — Permanent install (available in all sessions)
-
-Copy the module folder to one of PowerShell's module directories. It will then be auto-discoverable without needing to `Import-Module` each time.
-
-```powershell
-# Create the module directory and copy files
-$dest = "$env:ProgramFiles\WindowsPowerShell\Modules\IntuneEnrollmentRepair"
-New-Item -Path $dest -ItemType Directory -Force
-Copy-Item -Path "C:\Tools\IntuneEnrollmentRepair\*" -Destination $dest -Force
-```
-
-Verify it is discoverable:
-
-```powershell
-Get-Module -ListAvailable IntuneEnrollmentRepair
-```
-
-You should see the module listed with its version. From this point any elevated PowerShell session can use:
-
-```powershell
-Import-Module IntuneEnrollmentRepair
-```
-
----
-
-### Option C — Per-user install (non-system path)
-
-If you do not have access to write to `Program Files`, install to the current user's module path instead:
-
-```powershell
-$dest = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules\IntuneEnrollmentRepair"
-New-Item -Path $dest -ItemType Directory -Force
-Copy-Item -Path "C:\Tools\IntuneEnrollmentRepair\*" -Destination $dest -Force
-```
-
-> Note: The module still requires an **elevated** session to run — it just lives in a user-writable path.
-
----
-
-## Step 4 — First Run
+## Step 3 — First Run
 
 Open an **elevated** PowerShell window (Run as Administrator).
 
 ```powershell
-# If permanently installed:
 Import-Module IntuneEnrollmentRepair
-
-# If using direct import:
-Import-Module C:\Tools\IntuneEnrollmentRepair\IntuneEnrollmentRepair.psm1 -Force
 ```
 
 Run a read-only health check first to understand the device's current state before making any changes:
@@ -288,18 +254,10 @@ Start-MDMReEnrollment
 
 ## Uninstalling the Module
 
-### If permanently installed
+### If installed via PSGallery or module directory
 
 ```powershell
-$path = "$env:ProgramFiles\WindowsPowerShell\Modules\IntuneEnrollmentRepair"
-Remove-Item -Path $path -Recurse -Force
-```
-
-### If per-user installed
-
-```powershell
-$path = "$env:USERPROFILE\Documents\WindowsPowerShell\Modules\IntuneEnrollmentRepair"
-Remove-Item -Path $path -Recurse -Force
+Uninstall-Module -Name IntuneEnrollmentRepair
 ```
 
 ### Remove from current session only

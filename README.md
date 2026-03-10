@@ -1,5 +1,7 @@
 # IntuneEnrollmentRepair
 
+[![PSGallery](https://img.shields.io/powershellgallery/v/IntuneEnrollmentRepair)](https://www.powershellgallery.com/packages/IntuneEnrollmentRepair/1.0.8)
+
 A PowerShell module for diagnosing and repairing Microsoft Intune enrollment failures on Windows devices. Built as a transparent, production-grade replacement for the `intunesyncdebugtool` by Rudy Ooms.
 
 ---
@@ -44,6 +46,16 @@ The `intunesyncdebugtool` has limitations that make it unsuitable for production
 | Enrollment types | Entra-joined, HAADJ (including AD Connect sync), MAM-to-MDM migration, WCD provisioning package |
 
 > **Not suitable for** mid-flight Autopilot pre-provisioning or co-managed devices where ConfigMgr enrollment also needs re-establishing independently.
+
+---
+
+## Installation
+
+```powershell
+Install-Module -Name IntuneEnrollmentRepair
+```
+
+Available on the [PowerShell Gallery](https://www.powershellgallery.com/packages/IntuneEnrollmentRepair/1.0.8).
 
 ---
 
